@@ -1,5 +1,9 @@
 package com.andro2.qiblatime;
 
+import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+
 import android.Manifest;
 import android.location.Address;
 import android.location.Geocoder;
@@ -23,9 +27,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import android.content.pm.PackageManager; // Tambahkan impor untuk PackageManager
 
 
+
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private Button openCompassButton;
 
     private TextView fajr, dhuhr, asr, maghrib, isha, cityName;
     private LocationManager locationManager;
@@ -42,6 +49,18 @@ public class MainActivity extends AppCompatActivity {
         maghrib = findViewById(R.id.maghrib);
         isha = findViewById(R.id.isha);
         cityName = findViewById(R.id.cityName);
+        openCompassButton = findViewById(R.id.openCompassButton);
+
+        // Aksi tombol ke CompassActivity
+        openCompassButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, CompassActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
 
         // Cek izin lokasi
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -54,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
             // Jika izin sudah diberikan, langsung akses lokasi
             getLocation();
         }
+
     }
 
     private void getLocation() {

@@ -62,4 +62,13 @@
         app:layout_constraintTop_toBottomOf="@id/maghrib"
         app:layout_constraintStart_toStartOf="parent"
         android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/openCompassButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Buka Kompas Kiblat"
+        android:layout_marginTop="16dp"
+        android:layout_below="@id/cityName" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
