@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">QiblaTime</string>
+    <string name="fajr">Fajr</string>
+    <string name="dhuhr">Dhuhr</string>
+    <string name="asr">Asr</string>
+    <string name="maghrib">Maghrib</string>
+    <string name="isha">Isha</string>
+</resources>
