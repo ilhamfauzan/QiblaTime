@@ -9,6 +9,13 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
+
+
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class CompassActivity extends AppCompatActivity implements SensorEventListener {
@@ -28,10 +35,18 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private final double qiblaLatitude = 21.422487;
     private final double qiblaLongitude = 39.826206;
 
+    // arah kompas
+
+    private ImageView compassImage;
+    private float currentDegree = 0f;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compass);
+        compassImage = findViewById(R.id.compassImage);
+
 
         compassDirection = findViewById(R.id.compassDirection);
         locationInfo = findViewById(R.id.locationInfo); // Tambahkan TextView untuk info lokasi
@@ -104,9 +119,23 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
                 if (kiblatDirection < 0) kiblatDirection += 360;
 
                 compassDirection.setText("Arah Kiblat: " + Math.round(kiblatDirection) + "°");
+
+                // Animasi rotasi kompas
+                RotateAnimation rotateAnimation = new RotateAnimation(
+                        currentDegree,
+                        -kiblatDirection,
+                        Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF, 0.5f);
+
+                rotateAnimation.setDuration(210);
+                rotateAnimation.setFillAfter(true);
+                compassImage.startAnimation(rotateAnimation);
+
+                currentDegree = -kiblatDirection;
             }
         }
     }
+
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {

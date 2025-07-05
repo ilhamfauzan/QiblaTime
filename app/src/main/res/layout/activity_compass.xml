@@ -11,8 +11,7 @@
         android:layout_height="wrap_content"
         android:text="Arah Kiblat: "
         android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_centerInParent="true" />
+        android:textStyle="bold"/>
     <TextView
         android:id="@+id/locationInfo"
         android:layout_width="wrap_content"
@@ -20,6 +19,14 @@
         android:text="Arah Kiblat: "
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_centerInParent="true"
         android:layout_above="@id/compassDirection"/>
+
+    <ImageView
+        android:id="@+id/compassImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/compass"
+        android:contentDescription="Gambar Kompas"/>
+
 </RelativeLayout>
