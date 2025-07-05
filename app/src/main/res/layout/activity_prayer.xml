@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="50dp"
     tools:context=".MainActivity">
 
     <!-- City Name TextView -->
@@ -13,54 +14,126 @@
         android:layout_height="wrap_content"
         android:text="City: "
         android:textSize="18sp"
+        android:layout_marginBottom="20dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="20dp"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Prayer Times TextViews -->
+
     <TextView
         android:id="@+id/fajr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="40dp"
         android:text="Fajr: "
-        app:layout_constraintTop_toBottomOf="@id/cityName"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
+        app:layout_constraintTop_toBottomOf="@id/cityName" />
+
+    <TextView
+        android:id="@+id/fajrNextTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="Time before Fajr: "
+        android:textSize="14sp"
+        android:textColor="#666666"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fajr" />
 
     <TextView
         android:id="@+id/dhuhr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="12dp"
         android:text="Dhuhr: "
-        app:layout_constraintTop_toBottomOf="@id/fajr"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
+        app:layout_constraintTop_toBottomOf="@id/fajrNextTo" />
+
+    <TextView
+        android:id="@+id/dhuhrNextTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="Time before Dhuhr: "
+        android:textSize="14sp"
+        android:textColor="#666666"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dhuhr" />
 
     <TextView
         android:id="@+id/asr"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="12dp"
         android:text="Asr: "
-        app:layout_constraintTop_toBottomOf="@id/dhuhr"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
+        app:layout_constraintTop_toBottomOf="@id/dhuhrNextTo" />
+
+    <TextView
+        android:id="@+id/asrNextTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="Time before Asr: "
+        android:textSize="14sp"
+        android:textColor="#666666"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/asr" />
 
     <TextView
         android:id="@+id/maghrib"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="12dp"
         android:text="Maghrib: "
-        app:layout_constraintTop_toBottomOf="@id/asr"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
+        app:layout_constraintTop_toBottomOf="@id/asrNextTo" />
+
+    <TextView
+        android:id="@+id/maghribNextTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="Time before Maghrib: "
+        android:textSize="14sp"
+        android:textColor="#666666"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/maghrib" />
 
     <TextView
         android:id="@+id/isha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="12dp"
         android:text="Isha: "
-        app:layout_constraintTop_toBottomOf="@id/maghrib"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
+        app:layout_constraintTop_toBottomOf="@id/maghribNextTo" />
+
+    <TextView
+        android:id="@+id/ishaNextTo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="Time before Isha: "
+        android:textSize="14sp"
+        android:textColor="#666666"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/isha" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
