@@ -2,73 +2,53 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- City Name TextView -->
-    <TextView
-        android:id="@+id/cityName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="City: "
-        android:textSize="18sp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="20dp"/>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="24dp"
+        android:background="#FFFFFF">
 
-    <!-- Prayer Times TextViews -->
-    <TextView
-        android:id="@+id/fajr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Fajr: "
-        app:layout_constraintTop_toBottomOf="@id/cityName"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
+        <TextView
+            android:id="@+id/appTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="QiblaTime"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#2C8F60"
+            android:layout_marginBottom="32dp" />
 
-    <TextView
-        android:id="@+id/dhuhr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dhuhr: "
-        app:layout_constraintTop_toBottomOf="@id/fajr"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
+        <Button
+            android:id="@+id/btnJadwal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/prayerTimeBtn"
+            android:backgroundTint="#A2E4C1"
+            android:textColor="#000000"
+            android:drawablePadding="8dp"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
 
-    <TextView
-        android:id="@+id/asr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Asr: "
-        app:layout_constraintTop_toBottomOf="@id/dhuhr"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
+        <Button
+            android:id="@+id/btnKiblat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/qiblaBtn"
+            android:backgroundTint="#A2E4C1"
+            android:textColor="#000000"
+            android:drawablePadding="8dp"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
 
-    <TextView
-        android:id="@+id/maghrib"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Maghrib: "
-        app:layout_constraintTop_toBottomOf="@id/asr"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
+    </LinearLayout>
 
-    <TextView
-        android:id="@+id/isha"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Isha: "
-        app:layout_constraintTop_toBottomOf="@id/maghrib"
-        app:layout_constraintStart_toStartOf="parent"
-        android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/openCompassButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Buka Kompas Kiblat"
-        android:layout_marginTop="16dp"
-        android:layout_below="@id/cityName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

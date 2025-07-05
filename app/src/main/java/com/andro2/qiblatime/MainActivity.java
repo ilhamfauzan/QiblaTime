@@ -1,104 +1,149 @@
 package com.andro2.qiblatime;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
 import android.Manifest;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.Bundle;
-import android.widget.TextView;
-import androidx.appcompat.app.AppCompatActivity;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import android.content.pm.PackageManager;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-import android.content.pm.PackageManager; // Tambahkan impor untuk PackageManager
-
-
-
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private Button openCompassButton;
-
-    private TextView fajr, dhuhr, asr, maghrib, isha, cityName;
+    private Button btnJadwal;
+    private Button btnKiblat;
     private LocationManager locationManager;
     private LocationListener locationListener;
+
+    private double currentLatitude = 0.0;
+    private double currentLongitude = 0.0;
+    private String currentCity = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        fajr = findViewById(R.id.fajr);
-        dhuhr = findViewById(R.id.dhuhr);
-        asr = findViewById(R.id.asr);
-        maghrib = findViewById(R.id.maghrib);
-        isha = findViewById(R.id.isha);
-        cityName = findViewById(R.id.cityName);
-        openCompassButton = findViewById(R.id.openCompassButton);
+        // Inisialisasi views
+        initViews();
 
-        // Aksi tombol ke CompassActivity
-        openCompassButton.setOnClickListener(new View.OnClickListener() {
+        // Setup click listeners
+        setupClickListeners();
+
+        // Request lokasi saat aplikasi dimulai
+        requestLocationPermission();
+
+        // Tampilkan pesan loading
+        Toast.makeText(this, "Mendapatkan lokasi...", Toast.LENGTH_SHORT).show();
+    }
+
+    private void initViews() {
+        btnJadwal = findViewById(R.id.btnJadwal);
+        btnKiblat = findViewById(R.id.btnKiblat);
+    }
+
+    private void setupClickListeners() {
+        // Tombol Jadwal Shalat - mengarah ke PrayerTimeActivity dengan data lokasi
+        btnJadwal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, CompassActivity.class);
-                startActivity(intent);
+                if (currentLatitude != 0.0 && currentLongitude != 0.0) {
+                    Intent intent = new Intent(MainActivity.this, PrayerTimeActivity.class);
+                    intent.putExtra("latitude", currentLatitude);
+                    intent.putExtra("longitude", currentLongitude);
+                    intent.putExtra("city", currentCity);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, "Lokasi belum tersedia, mohon tunggu sebentar...", Toast.LENGTH_LONG).show();
+                    // Coba get lokasi lagi jika belum ada
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        getLocation();
+                    }
+                }
             }
         });
 
+        // Tombol Kiblat - mengarah ke QiblaActivity
+        btnKiblat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentLatitude != 0.0 && currentLongitude != 0.0) {
+                    Intent intent = new Intent(MainActivity.this, CompassActivity.class);
+                    intent.putExtra("latitude", currentLatitude);
+                    intent.putExtra("longitude", currentLongitude);
+                    intent.putExtra("city", currentCity);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, "Lokasi belum tersedia, mohon tunggu sebentar...", Toast.LENGTH_LONG).show();
+                    // Coba get lokasi lagi jika belum ada
+                    if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                            == PackageManager.PERMISSION_GRANTED) {
+                        getLocation();
+                    }
+                }
+            }
+        });
+    }
 
-
+    private void requestLocationPermission() {
         // Cek izin lokasi
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
-            // Jika izin tidak diberikan, maka minta izin
+            // Jika izin tidak diberikan, minta izin
             ActivityCompat.requestPermissions(this,
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         } else {
             // Jika izin sudah diberikan, langsung akses lokasi
             getLocation();
         }
-
     }
 
     private void getLocation() {
-        // Mendapatkan lokasi menggunakan LocationManager
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                double latitude = location.getLatitude();
-                double longitude = location.getLongitude();
+                currentLatitude = location.getLatitude();
+                currentLongitude = location.getLongitude();
 
                 // Mendapatkan nama kota menggunakan Geocoder
                 Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
                 try {
-                    List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+                    List<Address> addresses = geocoder.getFromLocation(currentLatitude, currentLongitude, 1);
                     if (addresses != null && addresses.size() > 0) {
-                        String city = addresses.get(0).getLocality(); // Nama kota
-                        cityName.setText("City: " + city);
+                        currentCity = addresses.get(0).getLocality();
+                        if (currentCity == null) {
+                            currentCity = addresses.get(0).getSubAdminArea();
+                        }
+                        if (currentCity == null) {
+                            currentCity = "Unknown City";
+                        }
+
+                        Toast.makeText(MainActivity.this, "Lokasi berhasil ditemukan: " + currentCity, Toast.LENGTH_SHORT).show();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    currentCity = "Unknown City";
+                    Toast.makeText(MainActivity.this, "Tidak dapat menentukan nama kota", Toast.LENGTH_SHORT).show();
                 }
 
-                // Ambil jadwal salat berdasarkan lokasi
-                fetchPrayerTimes(latitude, longitude);
+                // Hentikan update lokasi setelah mendapat lokasi pertama
+                locationManager.removeUpdates(locationListener);
             }
 
             @Override
@@ -112,69 +157,41 @@ public class MainActivity extends AppCompatActivity {
         };
 
         // Request lokasi dari GPS provider
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-    }
 
-    private void fetchPrayerTimes(double latitude, double longitude) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.aladhan.com/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        PrayerApiService apiService = retrofit.create(PrayerApiService.class);
-        Call<PrayerTimesResponse> call = apiService.getPrayerTimes(latitude, longitude, 2); // Method 2 is Umm al-Qura
-
-        call.enqueue(new Callback<PrayerTimesResponse>() {
-            @Override
-            public void onResponse(Call<PrayerTimesResponse> call, Response<PrayerTimesResponse> response) {
-                if (response.isSuccessful()) {
-                    PrayerTimesResponse times = response.body();
-
-                    fajr.setText("Fajr: " + times.getData().getTimings().getFajr());
-                    dhuhr.setText("Dhuhr: " + times.getData().getTimings().getDhuhr());
-                    asr.setText("Asr: " + times.getData().getTimings().getAsr());
-                    maghrib.setText("Maghrib: " + times.getData().getTimings().getMaghrib());
-                    isha.setText("Isha: " + times.getData().getTimings().getIsha());
-                }
-            }
-
-
-            @Override
-            public void onFailure(Call<PrayerTimesResponse> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+        // Coba gunakan network provider terlebih dahulu (lebih cepat)
+        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+        } else {
+            Toast.makeText(this, "GPS atau Network Provider tidak tersedia", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);  // Tambahkan pemanggilan ke super
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Jika izin diberikan, ambil lokasi
                 getLocation();
             } else {
-                // Jika izin ditolak, beri pesan atau hentikan aplikasi
-                cityName.setText("Permission denied. Cannot access location.");
+                // Jika izin ditolak, beri pesan
+                Toast.makeText(this, "Izin lokasi diperlukan untuk mendapatkan jadwal shalat", Toast.LENGTH_LONG).show();
             }
         }
     }
 
-
     @Override
-    protected void onPause() {
-        super.onPause();
-        locationManager.removeUpdates(locationListener);
+    protected void onDestroy() {
+        super.onDestroy();
+        if (locationManager != null && locationListener != null) {
+            locationManager.removeUpdates(locationListener);
+        }
     }
 }

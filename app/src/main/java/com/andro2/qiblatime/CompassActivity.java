@@ -1,11 +1,13 @@
 package com.andro2.qiblatime;
 
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,11 +18,11 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private float[] gravity;
     private float[] geomagnetic;
 
-    private TextView compassDirection;
+    private TextView compassDirection, locationInfo;
 
-    // Lokasi pengguna (misalnya Jakarta)
-    private final double userLatitude = -6.200000;
-    private final double userLongitude = 106.816666;
+    // Lokasi pengguna (akan didapat dari Intent)
+    private double userLatitude = -6.200000;  // default Jakarta
+    private double userLongitude = 106.816666; // default Jakarta
 
     // Lokasi Ka'bah
     private final double qiblaLatitude = 21.422487;
@@ -31,11 +33,40 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compass);
 
-        compassDirection = findViewById(R.id.compassDirection); // pastikan ID cocok dengan layout
+        compassDirection = findViewById(R.id.compassDirection);
+        locationInfo = findViewById(R.id.locationInfo); // Tambahkan TextView untuk info lokasi
+
+        // Dapatkan lokasi dari Intent
+        getLocationFromIntent();
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         magneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    private void getLocationFromIntent() {
+        Intent intent = getIntent();
+        if (intent != null) {
+            double intentLatitude = intent.getDoubleExtra("latitude", 0.0);
+            double intentLongitude = intent.getDoubleExtra("longitude", 0.0);
+            String city = intent.getStringExtra("city");
+
+            if (intentLatitude != 0.0 && intentLongitude != 0.0) {
+                userLatitude = intentLatitude;
+                userLongitude = intentLongitude;
+
+                if (city != null && !city.isEmpty()) {
+                    locationInfo.setText("Lokasi: " + city);
+                } else {
+                    locationInfo.setText("Lokasi: " + String.format("%.6f, %.6f", userLatitude, userLongitude));
+                }
+
+                Toast.makeText(this, "Menggunakan lokasi: " + city, Toast.LENGTH_SHORT).show();
+            } else {
+                locationInfo.setText("Lokasi: Jakarta (Default)");
+                Toast.makeText(this, "Menggunakan lokasi default Jakarta", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -69,7 +100,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
                 if (azimuth < 0) azimuth += 360;
 
                 double qiblaAzimuth = calculateQiblaAzimuth(userLatitude, userLongitude, qiblaLatitude, qiblaLongitude);
-                float kiblatDirection = (float) (azimuth - qiblaAzimuth);
+                float kiblatDirection = (float) (qiblaAzimuth - azimuth);
                 if (kiblatDirection < 0) kiblatDirection += 360;
 
                 compassDirection.setText("Arah Kiblat: " + Math.round(kiblatDirection) + "°");

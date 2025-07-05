@@ -19,6 +19,7 @@
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="locked"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,7 +27,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CompassActivity"></activity>
+        <activity android:name=".PrayerTimeActivity"></activity>
+        <activity android:name=".CompassActivity"
+            android:screenOrientation="locked"></activity>
     </application>
 
 </manifest>

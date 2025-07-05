@@ -5,4 +5,7 @@
     <string name="asr">Asr</string>
     <string name="maghrib">Maghrib</string>
     <string name="isha">Isha</string>
+
+    <string name="prayerTimeBtn">Jadwal Solat</string>
+    <string name="qiblaBtn">Arah Kiblat</string>
 </resources>
