@@ -16,10 +16,10 @@
         android:id="@+id/locationInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Arah Kiblat: "
+        android:text="Lokasi: "
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_above="@id/compassDirection"/>
+        android:layout_below="@id/compassDirection"/>
 
     <ImageView
         android:id="@+id/compassImage"
