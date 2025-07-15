@@ -40,6 +40,10 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private ImageView compassImage;
     private float currentDegree = 0f;
 
+    // Penanda untuk melacak apakah Toast lokasi awal sudah ditampilkan
+    private boolean toastLokasiAwalSudahDitampilkan = false;
+    private static final String KUNCI_TOAST_LOKASI_AWAL_SUDAH_DITAMPILKAN = "toastLokasiAwalSudahDitampilkan";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +55,24 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         compassDirection = findViewById(R.id.compassDirection);
         locationInfo = findViewById(R.id.locationInfo); // Tambahkan TextView untuk info lokasi
 
+        // Pulihkan status jika ada (misalnya setelah rotasi layar)
+        if (savedInstanceState != null) {
+            toastLokasiAwalSudahDitampilkan = savedInstanceState.getBoolean(KUNCI_TOAST_LOKASI_AWAL_SUDAH_DITAMPILKAN, false);
+        }
+
         // Dapatkan lokasi dari Intent
         getLocationFromIntent();
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         magneticSensor = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Simpan status penanda Toast
+        outState.putBoolean(KUNCI_TOAST_LOKASI_AWAL_SUDAH_DITAMPILKAN, toastLokasiAwalSudahDitampilkan);
     }
 
     private void getLocationFromIntent() {
@@ -76,10 +92,19 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
                     locationInfo.setText("Lokasi: " + String.format("%.6f, %.6f", userLatitude, userLongitude));
                 }
 
-                Toast.makeText(this, "Menggunakan lokasi: " + city, Toast.LENGTH_SHORT).show();
+                // Hanya tampilkan Toast jika belum pernah ditampilkan untuk instance Activity ini
+                if (!toastLokasiAwalSudahDitampilkan) {
+                    String toastMessage = "Menggunakan lokasi: " + (city != null && !city.isEmpty() ? city : "Koordinat");
+                    Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
+                    toastLokasiAwalSudahDitampilkan = true; // Set penanda menjadi true setelah ditampilkan
+                }
             } else {
                 locationInfo.setText("Lokasi: Jakarta (Default)");
-                Toast.makeText(this, "Menggunakan lokasi default Jakarta", Toast.LENGTH_SHORT).show();
+                // Hanya tampilkan Toast jika belum pernah ditampilkan
+                if (!toastLokasiAwalSudahDitampilkan) {
+                    Toast.makeText(this, "Menggunakan lokasi default Jakarta", Toast.LENGTH_SHORT).show();
+                    toastLokasiAwalSudahDitampilkan = true; // Set penanda menjadi true setelah ditampilkan
+                }
             }
         }
     }
