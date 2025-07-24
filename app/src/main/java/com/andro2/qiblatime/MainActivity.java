@@ -3,18 +3,18 @@ package com.andro2.qiblatime;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import androidx.cardview.widget.CardView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import android.content.pm.PackageManager;
 import android.Manifest;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.widget.Toast;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import android.content.pm.PackageManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,8 +23,9 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
-    private Button btnJadwal;
-    private Button btnKiblat;
+    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 2;
+    private CardView btnJadwal;
+    private CardView btnKiblat;
     private LocationManager locationManager;
     private LocationListener locationListener;
 
@@ -45,6 +46,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Request lokasi saat aplikasi dimulai
         requestLocationPermission();
+
+        // Request notifikasi saat aplikasi dimulai
+        requestNotificationPermission();
 
         // Tampilkan pesan loading
         Toast.makeText(this, "Mendapatkan lokasi...", Toast.LENGTH_SHORT).show();
@@ -110,6 +114,17 @@ public class MainActivity extends AppCompatActivity {
         } else {
             // Jika izin sudah diberikan, langsung akses lokasi
             getLocation();
+        }
+    }
+
+    private void requestNotificationPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIFICATION_PERMISSION_REQUEST_CODE);
+            }
         }
     }
 
@@ -183,6 +198,13 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 // Jika izin ditolak, beri pesan
                 Toast.makeText(this, "Izin lokasi diperlukan untuk mendapatkan jadwal shalat", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Izin notifikasi diberikan
+            } else {
+                // Izin notifikasi ditolak
+                Toast.makeText(this, "Izin notifikasi diperlukan untuk menampilkan notifikasi shalat", Toast.LENGTH_LONG).show();
             }
         }
     }

@@ -1,9 +1,15 @@
 package com.andro2.qiblatime;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+
+import androidx.cardview.widget.CardView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -73,11 +79,30 @@ public class PrayerTimeActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Data lokasi tidak valid", Toast.LENGTH_SHORT).show();
         }
+        NotificationHelper.createNotificationChannel(this);
     }
 
     private void initViews() {
         cityName = findViewById(R.id.cityName);
         prayerTimesContainer = findViewById(R.id.prayerTimesContainer);
+        ImageButton btnBack = findViewById(R.id.btnBack);
+        ImageButton btnToQibla = findViewById(R.id.btnToQibla);
+
+        btnBack.setOnClickListener(v -> {
+            // Kembali ke MainActivity
+            Intent intent = new Intent(PrayerTimeActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish(); // Menutup activity saat ini
+        });
+
+        btnToQibla.setOnClickListener(v -> {
+            Intent intent = new Intent(PrayerTimeActivity.this, CompassActivity.class);
+            intent.putExtra("latitude", latitude);
+            intent.putExtra("longitude", longitude);
+            intent.putExtra("city", city);
+            startActivity(intent);
+        });
 
         // Pastikan prayerTimesContainer tidak null
         if (prayerTimesContainer == null) {
@@ -118,16 +143,18 @@ public class PrayerTimeActivity extends AppCompatActivity {
         call.enqueue(new Callback<PrayerTimesResponse>() {
             @Override
             public void onResponse(Call<PrayerTimesResponse> call, Response<PrayerTimesResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null &&
+                    response.body().getData() != null && response.body().getData().getTimings() != null) {
                     PrayerTimesResponse times = response.body();
+                    PrayerTimesResponse.Timings timings = times.getData().getTimings();
 
                     // Buat list shalat
                     prayerList.clear();
-                    prayerList.add(new PrayerInfo("Fajr", times.getData().getTimings().getFajr()));
-                    prayerList.add(new PrayerInfo("Dhuhr", times.getData().getTimings().getDhuhr()));
-                    prayerList.add(new PrayerInfo("Asr", times.getData().getTimings().getAsr()));
-                    prayerList.add(new PrayerInfo("Maghrib", times.getData().getTimings().getMaghrib()));
-                    prayerList.add(new PrayerInfo("Isha", times.getData().getTimings().getIsha()));
+                    prayerList.add(new PrayerInfo("Fajr", timings.getFajr()));
+                    prayerList.add(new PrayerInfo("Dhuhr", timings.getDhuhr()));
+                    prayerList.add(new PrayerInfo("Asr", timings.getAsr()));
+                    prayerList.add(new PrayerInfo("Maghrib", timings.getMaghrib()));
+                    prayerList.add(new PrayerInfo("Isha", timings.getIsha()));
 
                     // Hitung waktu hingga setiap shalat
                     calculateTimeUntilPrayers();
@@ -159,7 +186,8 @@ public class PrayerTimeActivity extends AppCompatActivity {
         Calendar now = Calendar.getInstance();
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
-        for (PrayerInfo prayer : prayerList) {
+        for (int i = 0; i < prayerList.size(); i++) {
+            PrayerInfo prayer = prayerList.get(i);
             try {
                 Date prayerDate = timeFormat.parse(prayer.time);
                 Calendar prayerCalendar = Calendar.getInstance();
@@ -174,6 +202,9 @@ public class PrayerTimeActivity extends AppCompatActivity {
                 }
 
                 prayer.timeUntilPrayer = prayerCalendar.getTimeInMillis() - now.getTimeInMillis();
+
+                // Schedule notification
+                scheduleNotification(prayerCalendar.getTimeInMillis(), prayer.name, i);
 
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -204,58 +235,96 @@ public class PrayerTimeActivity extends AppCompatActivity {
         for (int i = 0; i < prayerList.size(); i++) {
             PrayerInfo prayer = prayerList.get(i);
 
-            // Buat container untuk setiap shalat
+            // Gunakan CardView untuk shadow yang lebih baik
+            CardView cardView = new CardView(this);
+            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            cardParams.setMargins(0, 0, 0, 24); // Margin antar kartu
+            cardView.setLayoutParams(cardParams);
+            cardView.setRadius(16f); // Sudut membulat
+            cardView.setCardElevation(16f); // Shadow yang lebih kuat
+
+            // Buat container di dalam CardView
             LinearLayout prayerContainer = new LinearLayout(this);
             prayerContainer.setOrientation(LinearLayout.VERTICAL);
-            prayerContainer.setPadding(16, 16, 16, 16);
+            prayerContainer.setPadding(24, 24, 24, 24);
 
-            // Beri background berbeda untuk shalat terdekat
+            // Atur warna latar belakang kartu
             if (i == 0) {
-                prayerContainer.setBackgroundColor(Color.parseColor("#E8F5E8")); // Hijau muda
+                cardView.setCardBackgroundColor(Color.parseColor("#E9EFEC"));
             } else if (i == 1) {
-                prayerContainer.setBackgroundColor(Color.parseColor("#FFF8E1")); // Kuning muda
+                cardView.setCardBackgroundColor(Color.parseColor("#C4DAD2"));
             } else {
-                prayerContainer.setBackgroundColor(Color.parseColor("#F5F5F5")); // Abu-abu muda
+                cardView.setCardBackgroundColor(Color.parseColor("#6A9C89"));
             }
 
-            // Margin antar item
-            LinearLayout.LayoutParams containerParams = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            containerParams.setMargins(0, 0, 0, 16);
-            prayerContainer.setLayoutParams(containerParams);
+            // Tentukan warna teks berdasarkan posisi kartu
+            int textColor;
+            if (i == 0 || i == 1) {
+                textColor = Color.BLACK; // Teks hitam untuk kartu terang
+            } else {
+                textColor = Color.WHITE; // Teks putih untuk kartu gelap
+            }
 
-            // TextView untuk nama dan waktu shalat
-            TextView prayerTimeView = new TextView(this);
-            prayerTimeView.setText(prayer.name + ": " + prayer.time);
-            prayerTimeView.setTextSize(18);
-            prayerTimeView.setTextColor(Color.BLACK);
+            // TextView untuk NAMA shalat (kecil, di atas)
+            TextView prayerNameView = new TextView(this);
+            prayerNameView.setTextSize(16);
+            prayerNameView.setTextColor(textColor);
+            LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            nameParams.setMargins(0, 0, 0, 4);
+            prayerNameView.setLayoutParams(nameParams);
+
+            // Tentukan emoji berdasarkan nama sholat
+            String emoji = "";
+            switch (prayer.name.toLowerCase()) {
+                case "fajr":    emoji = "🌅"; break;
+                case "dhuhr":   emoji = "☀️"; break;
+                case "asr":     emoji = "🌇"; break;
+                case "maghrib": emoji = "🌙"; break;
+                case "isha":    emoji = "🌕"; break;
+            }
+
+            String prayerText = emoji + " " + prayer.name;
 
             // Beri penanda untuk shalat terdekat
             if (i == 0) {
-                prayerTimeView.setTextSize(20);
-                prayerTimeView.setTextColor(Color.parseColor("#2E7D32")); // Hijau tua
-                prayerTimeView.setText("🕐 " + prayer.name + ": " + prayer.time + " (NEXT)");
-            } else if (i == 1) {
-                prayerTimeView.setTextColor(Color.parseColor("#F57C00")); // Orange
-                prayerTimeView.setText("⏰ " + prayer.name + ": " + prayer.time);
+                prayerNameView.setTextSize(18);
+                prayerNameView.setText(prayerText + " (NEXT)");
+            } else {
+                prayerNameView.setText(prayerText);
             }
+
+            // TextView untuk WAKTU shalat (besar, bold, di bawah nama)
+            TextView prayerTimeView = new TextView(this);
+            prayerTimeView.setText(prayer.time);
+            prayerTimeView.setTextSize(40);
+            prayerTimeView.setTypeface(null, android.graphics.Typeface.BOLD);
+            prayerTimeView.setTextColor(textColor);
+            LinearLayout.LayoutParams timeParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            timeParams.setMargins(0, 0, 0, 12);
+            prayerTimeView.setLayoutParams(timeParams);
 
             // TextView untuk countdown
             TextView countdownView = new TextView(this);
-            countdownView.setTextSize(14);
-            countdownView.setTextColor(Color.parseColor("#666666"));
+            countdownView.setTextSize(16);
+            countdownView.setTextColor(textColor);
             countdownView.setText("Time remaining: Calculating...");
 
             // Simpan reference ke TextViews
-            prayer.timeTextView = prayerTimeView;
             prayer.countdownTextView = countdownView;
 
-            // Tambahkan ke container
+            // Tambahkan TextViews ke dalam LinearLayout
+            prayerContainer.addView(prayerNameView);
             prayerContainer.addView(prayerTimeView);
             prayerContainer.addView(countdownView);
 
-            // Tambahkan container ke layout utama
-            prayerTimesContainer.addView(prayerContainer);
+            // Tambahkan LinearLayout ke dalam CardView
+            cardView.addView(prayerContainer);
+
+            // Tambahkan CardView ke layout utama
+            prayerTimesContainer.addView(cardView);
         }
     }
 
@@ -351,6 +420,27 @@ public class PrayerTimeActivity extends AppCompatActivity {
         prayerTimesContainer.addView(errorText);
 
         Toast.makeText(this, "Gagal memuat jadwal shalat", Toast.LENGTH_SHORT).show();
+    }
+
+    private void scheduleNotification(long time, String prayerName, int notificationId) {
+        Intent intent = new Intent(this, PrayerAlarmReceiver.class);
+        intent.putExtra("prayerName", prayerName);
+        intent.putExtra("notificationId", notificationId);
+
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, notificationId, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        if (alarmManager != null) {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                if (alarmManager.canScheduleExactAlarms()) {
+                    alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+                } else {
+                    // Handle case where permission is not granted
+                }
+            } else {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent);
+            }
+        }
     }
 
     @Override

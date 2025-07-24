@@ -14,8 +14,6 @@ import android.widget.ImageView;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 
-
-
 import androidx.appcompat.app.AppCompatActivity;
 
 public class CompassActivity extends AppCompatActivity implements SensorEventListener {
@@ -35,32 +33,29 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     private final double qiblaLatitude = 21.422487;
     private final double qiblaLongitude = 39.826206;
 
-    // arah kompas
-
-    private ImageView compassImage;
+    // Arah kompas
+    private ImageView compassImage, qiblaIndicator;
     private float currentDegree = 0f;
+    private float currentQiblaDegree = 0f;
 
     // Penanda untuk melacak apakah Toast lokasi awal sudah ditampilkan
     private boolean toastLokasiAwalSudahDitampilkan = false;
     private static final String KUNCI_TOAST_LOKASI_AWAL_SUDAH_DITAMPILKAN = "toastLokasiAwalSudahDitampilkan";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_compass);
         compassImage = findViewById(R.id.compassImage);
-
+        qiblaIndicator = findViewById(R.id.qiblaIndicator);
 
         compassDirection = findViewById(R.id.compassDirection);
-        locationInfo = findViewById(R.id.locationInfo); // Tambahkan TextView untuk info lokasi
+        locationInfo = findViewById(R.id.locationInfo);
 
-        // Pulihkan status jika ada (misalnya setelah rotasi layar)
         if (savedInstanceState != null) {
             toastLokasiAwalSudahDitampilkan = savedInstanceState.getBoolean(KUNCI_TOAST_LOKASI_AWAL_SUDAH_DITAMPILKAN, false);
         }
 
-        // Dapatkan lokasi dari Intent
         getLocationFromIntent();
 
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
@@ -71,7 +66,6 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        // Simpan status penanda Toast
         outState.putBoolean(KUNCI_TOAST_LOKASI_AWAL_SUDAH_DITAMPILKAN, toastLokasiAwalSudahDitampilkan);
     }
 
@@ -92,18 +86,16 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
                     locationInfo.setText("Lokasi: " + String.format("%.6f, %.6f", userLatitude, userLongitude));
                 }
 
-                // Hanya tampilkan Toast jika belum pernah ditampilkan untuk instance Activity ini
                 if (!toastLokasiAwalSudahDitampilkan) {
                     String toastMessage = "Menggunakan lokasi: " + (city != null && !city.isEmpty() ? city : "Koordinat");
                     Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
-                    toastLokasiAwalSudahDitampilkan = true; // Set penanda menjadi true setelah ditampilkan
+                    toastLokasiAwalSudahDitampilkan = true;
                 }
             } else {
                 locationInfo.setText("Lokasi: Jakarta (Default)");
-                // Hanya tampilkan Toast jika belum pernah ditampilkan
                 if (!toastLokasiAwalSudahDitampilkan) {
                     Toast.makeText(this, "Menggunakan lokasi default Jakarta", Toast.LENGTH_SHORT).show();
-                    toastLokasiAwalSudahDitampilkan = true; // Set penanda menjadi true setelah ditampilkan
+                    toastLokasiAwalSudahDitampilkan = true;
                 }
             }
         }
@@ -136,35 +128,43 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
             if (success) {
                 float[] orientation = new float[3];
                 SensorManager.getOrientation(R, orientation);
-                float azimuth = (float) Math.toDegrees(orientation[0]); // arah utara
+                float azimuth = (float) Math.toDegrees(orientation[0]);
                 if (azimuth < 0) azimuth += 360;
 
+                // Calculate Qibla direction
                 double qiblaAzimuth = calculateQiblaAzimuth(userLatitude, userLongitude, qiblaLatitude, qiblaLongitude);
-                float kiblatDirection = (float) (qiblaAzimuth - azimuth);
-                if (kiblatDirection < 0) kiblatDirection += 360;
+                float kiblatDirection = (float) qiblaAzimuth;
 
                 compassDirection.setText("Arah Kiblat: " + Math.round(kiblatDirection) + "°");
 
-                // Animasi rotasi kompas
                 RotateAnimation rotateAnimation = new RotateAnimation(
                         currentDegree,
-                        -kiblatDirection,
+                        -azimuth,
                         Animation.RELATIVE_TO_SELF, 0.5f,
                         Animation.RELATIVE_TO_SELF, 0.5f);
 
                 rotateAnimation.setDuration(210);
                 rotateAnimation.setFillAfter(true);
                 compassImage.startAnimation(rotateAnimation);
+                currentDegree = -azimuth;
 
-                currentDegree = -kiblatDirection;
+                RotateAnimation qiblaAnimation = new RotateAnimation(
+                        currentQiblaDegree,
+                        kiblatDirection,
+                        Animation.RELATIVE_TO_SELF, 0.5f,
+                        Animation.RELATIVE_TO_SELF, 0.5f);
+
+                qiblaAnimation.setDuration(210);
+                qiblaAnimation.setFillAfter(true);
+                qiblaIndicator.startAnimation(qiblaAnimation);
+                currentQiblaDegree = kiblatDirection;
             }
         }
     }
 
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Tidak digunakan
+
     }
 
     private double calculateQiblaAzimuth(double lat1, double lon1, double lat2, double lon2) {

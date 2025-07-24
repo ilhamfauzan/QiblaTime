@@ -3,6 +3,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/backgroundmasjid"
     android:padding="24dp">
 
     <TextView
@@ -22,11 +23,19 @@
         android:layout_below="@id/compassDirection"/>
 
     <ImageView
+        android:id="@+id/qiblaIndicator"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/qibla_arrow"
+        android:contentDescription="Indikator Kiblat"/>
+
+    <ImageView
         android:id="@+id/compassImage"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:layout_centerInParent="true"
-        android:src="@drawable/compass"
+        android:src="@drawable/compass1"
         android:contentDescription="Gambar Kompas"/>
 
 </RelativeLayout>
