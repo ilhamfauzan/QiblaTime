@@ -14,7 +14,7 @@
         android:gravity="center"
         android:padding="24dp"
         android:background="@drawable/backgroundmasjid2"
-        android:scaleType="centerCrop">
+        android:scaleType="fitXY">
 
         <TextView
             android:id="@+id/appTitle"
