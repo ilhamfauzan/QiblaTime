@@ -106,7 +106,7 @@ public class PrayerTimeActivity extends AppCompatActivity {
 
         // Pastikan prayerTimesContainer tidak null
         if (prayerTimesContainer == null) {
-            Toast.makeText(this, "Error: prayerTimesContainer not found in layout", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Error: Prayer times container tidak ditemukan", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -121,9 +121,9 @@ public class PrayerTimeActivity extends AppCompatActivity {
 
             // Tampilkan nama kota
             if (city != null && !city.isEmpty()) {
-                cityName.setText("City: " + city);
+                cityName.setText("Kota: " + city);
             } else {
-                cityName.setText("City: Unknown");
+                cityName.setText("Kota: Tidak diketahui");
             }
         }
     }
@@ -225,7 +225,7 @@ public class PrayerTimeActivity extends AppCompatActivity {
     private void createSortedPrayerViews() {
         // Pastikan container tidak null
         if (prayerTimesContainer == null) {
-            Toast.makeText(this, "Error: Prayer times container is null", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error: Prayer times container tidak ditemukan", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -290,7 +290,7 @@ public class PrayerTimeActivity extends AppCompatActivity {
             // Beri penanda untuk shalat terdekat
             if (i == 0) {
                 prayerNameView.setTextSize(18);
-                prayerNameView.setText(prayerText + " (NEXT)");
+                prayerNameView.setText(prayerText + " (Selanjutnya)");
             } else {
                 prayerNameView.setText(prayerText);
             }
@@ -310,7 +310,7 @@ public class PrayerTimeActivity extends AppCompatActivity {
             TextView countdownView = new TextView(this);
             countdownView.setTextSize(16);
             countdownView.setTextColor(textColor);
-            countdownView.setText("Time before Adzan: Calculating...");
+            countdownView.setText("Waktu sebelum Adzan: menghitung...");
 
             // Simpan reference ke TextViews
             prayer.countdownTextView = countdownView;
@@ -345,7 +345,7 @@ public class PrayerTimeActivity extends AppCompatActivity {
         for (PrayerInfo prayer : prayerList) {
             if (prayer.countdownTextView != null) {
                 String countdown = getTimeUntilPrayer(prayer.time);
-                prayer.countdownTextView.setText("Time before Adzan: " + countdown);
+                prayer.countdownTextView.setText("Waktu sebelum Adzan: " + countdown);
             }
         }
 
@@ -398,7 +398,7 @@ public class PrayerTimeActivity extends AppCompatActivity {
         prayerTimesContainer.removeAllViews();
 
         TextView loadingText = new TextView(this);
-        loadingText.setText("Loading prayer times...");
+        loadingText.setText("Memuat jadwal shalat...");
         loadingText.setTextSize(16);
         loadingText.setTextColor(Color.GRAY);
         loadingText.setPadding(16, 16, 16, 16);
@@ -412,7 +412,7 @@ public class PrayerTimeActivity extends AppCompatActivity {
         prayerTimesContainer.removeAllViews();
 
         TextView errorText = new TextView(this);
-        errorText.setText("Error loading prayer times");
+        errorText.setText("Gagal memuat jadwal shalat");
         errorText.setTextSize(16);
         errorText.setTextColor(Color.RED);
         errorText.setPadding(16, 16, 16, 16);

@@ -24,8 +24,8 @@ public class NotificationHelper {
     public static NotificationCompat.Builder buildNotification(Context context, String prayerName) {
         return new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setContentTitle("Prayer Time")
-                .setContentText("It's time for " + prayerName)
+                .setContentTitle("Waktu Sholat")
+                .setContentText("Saatnya sholat " + prayerName)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true);
     }

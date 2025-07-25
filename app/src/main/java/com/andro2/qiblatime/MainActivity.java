@@ -146,14 +146,14 @@ public class MainActivity extends AppCompatActivity {
                             currentCity = addresses.get(0).getSubAdminArea();
                         }
                         if (currentCity == null) {
-                            currentCity = "Unknown City";
+                            currentCity = "Tidak diketahui";
                         }
 
                         Toast.makeText(MainActivity.this, "Lokasi berhasil ditemukan: " + currentCity, Toast.LENGTH_SHORT).show();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                    currentCity = "Unknown City";
+                    currentCity = "Tidak diketahui";
                     Toast.makeText(MainActivity.this, "Tidak dapat menentukan nama kota", Toast.LENGTH_SHORT).show();
                 }
 

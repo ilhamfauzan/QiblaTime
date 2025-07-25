@@ -12,7 +12,6 @@ import android.widget.Toast;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -92,7 +91,7 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
                     toastLokasiAwalSudahDitampilkan = true;
                 }
             } else {
-                locationInfo.setText("Lokasi: Jakarta (Default)");
+                locationInfo.setText("Lokasi: Bandung (Default)");
                 if (!toastLokasiAwalSudahDitampilkan) {
                     Toast.makeText(this, "Menggunakan lokasi default Jakarta", Toast.LENGTH_SHORT).show();
                     toastLokasiAwalSudahDitampilkan = true;

@@ -25,7 +25,7 @@
                 android:id="@+id/cityName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="City: Mountain View"
+                android:text="Kota: Jakarta"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
@@ -48,7 +48,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Kembali ke Menu Utama"
                 android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"/>
+                android:layout_centerVertical="true" />
 
             <!-- Tombol Kiblat -->
             <androidx.cardview.widget.CardView
