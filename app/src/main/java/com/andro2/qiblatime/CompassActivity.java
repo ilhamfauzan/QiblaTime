@@ -133,20 +133,21 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
 
                 // Calculate Qibla direction
                 double qiblaAzimuth = calculateQiblaAzimuth(userLatitude, userLongitude, qiblaLatitude, qiblaLongitude);
-                float kiblatDirection = (float) qiblaAzimuth;
+                float kiblatDirection = (float) (qiblaAzimuth - azimuth);
+                if (kiblatDirection < 0) kiblatDirection += 360;
 
                 compassDirection.setText("Arah Kiblat: " + Math.round(kiblatDirection) + "°");
 
                 RotateAnimation rotateAnimation = new RotateAnimation(
                         currentDegree,
-                        -azimuth,
+                        -kiblatDirection,
                         Animation.RELATIVE_TO_SELF, 0.5f,
                         Animation.RELATIVE_TO_SELF, 0.5f);
 
                 rotateAnimation.setDuration(210);
                 rotateAnimation.setFillAfter(true);
                 compassImage.startAnimation(rotateAnimation);
-                currentDegree = -azimuth;
+                currentDegree = -kiblatDirection;
 
                 RotateAnimation qiblaAnimation = new RotateAnimation(
                         currentQiblaDegree,
