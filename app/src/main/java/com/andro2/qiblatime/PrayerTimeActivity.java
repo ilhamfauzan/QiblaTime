@@ -310,7 +310,7 @@ public class PrayerTimeActivity extends AppCompatActivity {
             TextView countdownView = new TextView(this);
             countdownView.setTextSize(16);
             countdownView.setTextColor(textColor);
-            countdownView.setText("Time remaining: Calculating...");
+            countdownView.setText("Time before Adzan: Calculating...");
 
             // Simpan reference ke TextViews
             prayer.countdownTextView = countdownView;
@@ -345,7 +345,7 @@ public class PrayerTimeActivity extends AppCompatActivity {
         for (PrayerInfo prayer : prayerList) {
             if (prayer.countdownTextView != null) {
                 String countdown = getTimeUntilPrayer(prayer.time);
-                prayer.countdownTextView.setText("Time remaining: " + countdown);
+                prayer.countdownTextView.setText("Time before Adzan: " + countdown);
             }
         }
 

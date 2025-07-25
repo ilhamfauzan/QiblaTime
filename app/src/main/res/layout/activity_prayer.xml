@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="30dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/bg_text_container"
             android:elevation="4dp">
 
@@ -80,7 +80,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginTop="8dp">
-
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
