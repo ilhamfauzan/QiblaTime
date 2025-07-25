@@ -114,12 +114,25 @@ public class CompassActivity extends AppCompatActivity implements SensorEventLis
         sensorManager.unregisterListener(this);
     }
 
+    private static final float ALPHA = 0.25f; // nilai bisa disesuaikan
+
+    private float[] lowPass(float[] input, float[] output) {
+        if (output == null) return input;
+
+        for (int i = 0; i < input.length; i++) {
+            output[i] = output[i] + ALPHA * (input[i] - output[i]);
+        }
+        return output;
+    }
+
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
-            gravity = event.values;
+            gravity = lowPass(event.values.clone(), gravity);
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD)
-            geomagnetic = event.values;
+            geomagnetic = lowPass(event.values.clone(), geomagnetic);
+
 
         if (gravity != null && geomagnetic != null) {
             float[] R = new float[9];
