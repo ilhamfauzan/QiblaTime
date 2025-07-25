@@ -1,44 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/backgroundmasjid"
-    android:padding="24dp">
+    tools:context=".CompassActivity">
 
-    <TextView
-        android:id="@+id/compassDirection"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Arah Kiblat: "
-        android:textSize="24sp"
-        android:layout_marginTop="30dp"
-        android:textColor="@color/white"
-        android:textStyle="bold"/>
     <TextView
         android:id="@+id/locationInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Lokasi: "
-        android:textSize="24sp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/bg_text_container"
+        android:padding="12dp"
+        android:text="Lokasi: Bandung"
         android:textColor="@color/white"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_below="@id/compassDirection"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/compassImage"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:contentDescription="Gambar Kompas"
+        android:src="@drawable/compass1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/qiblaIndicator"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_centerInParent="true"
+        android:contentDescription="Indikator Kiblat"
         android:src="@drawable/qibla_arrow"
-        android:contentDescription="Indikator Kiblat"/>
+        app:layout_constraintBottom_toBottomOf="@+id/compassImage"
+        app:layout_constraintEnd_toEndOf="@+id/compassImage"
+        app:layout_constraintStart_toStartOf="@+id/compassImage"
+        app:layout_constraintTop_toTopOf="@+id/compassImage" />
 
-    <ImageView
-        android:id="@+id/compassImage"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/compass1"
-        android:contentDescription="Gambar Kompas"/>
+    <TextView
+        android:id="@+id/compassDirection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/bg_text_container"
+        android:padding="12dp"
+        android:text="Arah Kiblat: "
+        android:textColor="@android:color/white"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/compassImage" />
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
